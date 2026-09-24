@@ -1,10 +1,9 @@
-# 📚 Multi-Source Comic & Media Platform (Web Đọc Truyện & Xem Phim Đa Nguồn)
+#  Multi-Source Comic & Media Platform (Web Đọc Truyện & Xem Phim Đa Nguồn)
 
 > **Dự án Full-stack Web Đọc Truyện Tranh & Xem Phim tích hợp API Đa Nguồn, Tối ưu hóa Hiệu năng và Trải nghiệm Người dùng.**
 
-🌐 **Live Demo**: [Thêm link demo sau khi deploy tại đây - VD: https://web-truyen-demo.onrender.com]
+Link Demo:https://web-truyen-wt3c.onrender.com/
 
----
 
 ## 🌟 Giới thiệu Dự án
 

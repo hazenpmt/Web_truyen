@@ -229,8 +229,16 @@ export function CatalogView({
       ) : comics.length > 0 ? (
         <ComicPortalLayout comics={comics} rankingComics={rankingComics} source={source} isFiltered={!!(debouncedSearch || genre || status || ranking)} totalItems={totalItems} sectionTitle={rankingTitle} />
       ) : (
-        <div className="loading-row" style={{ textAlign: "center", padding: "40px" }}>
-          {source === "otruyen" ? "Không tìm thấy truyện nào." : "Chưa có truyện nào trong kho."}
+        <div className="loading-row" style={{ textAlign: "center", padding: "40px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+          <div style={{ fontSize: "1rem", color: "var(--ink)" }}>
+            {source === "otruyen" ? "Không tìm thấy truyện nào." : "Chưa có truyện nào trong kho nội bộ."}
+          </div>
+          {source === "local" && (
+            <div style={{ display: "flex", gap: "10px", marginTop: "8px", flexWrap: "wrap", justifyContent: "center" }}>
+              <button className="primary-action" onClick={() => setSource("otruyen")}>🚀 Xem kho OTruyen API (Hàng ngàn truyện)</button>
+              <button className="secondary-action" onClick={() => setSource("truyenqq")}>🔥 Xem kho TruyenQQ (Live)</button>
+            </div>
+          )}
         </div>
       )}
 

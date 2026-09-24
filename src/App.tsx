@@ -28,6 +28,7 @@ export default function App() {
   const [source, setSource] = useState<CatalogSource>(() => {
     const saved = localStorage.getItem("catalogSource");
     if (!saved || saved === "local") {
+      localStorage.setItem("catalogSource", "otruyen");
       return "otruyen";
     }
     return saved as CatalogSource;

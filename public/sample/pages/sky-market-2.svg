@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1280" role="img" aria-label="Trang truyện mẫu 2">
+  <rect width="900" height="1280" fill="#fbf2df"/>
+  <rect x="50" y="48" width="380" height="470" rx="8" fill="#f2b84b" stroke="#202020" stroke-width="8"/>
+  <rect x="470" y="48" width="380" height="470" rx="8" fill="#0f8b8d" stroke="#202020" stroke-width="8"/>
+  <path d="M112 390c68-90 154-126 258-102" fill="none" stroke="#202020" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="250" cy="230" r="72" fill="#faefe0"/>
+  <path d="M536 186h248v62H536zM536 294h184v62H536z" fill="#faefe0"/>
+  <path d="M536 422c98-46 182-46 250 0" fill="none" stroke="#d94f30" stroke-width="20" stroke-linecap="round"/>
+  <rect x="50" y="558" width="800" height="300" rx="8" fill="#173b42" stroke="#202020" stroke-width="8"/>
+  <g fill="#fff1ba">
+    <circle cx="156" cy="656" r="8"/>
+    <circle cx="280" cy="628" r="7"/>
+    <circle cx="420" cy="692" r="9"/>
+    <circle cx="602" cy="632" r="7"/>
+    <circle cx="724" cy="700" r="8"/>
+  </g>
+  <path d="M132 784h636" stroke="#f2b84b" stroke-width="18" stroke-linecap="round"/>
+  <rect x="50" y="900" width="800" height="300" rx="8" fill="#f8e6cd" stroke="#202020" stroke-width="8"/>
+  <path d="M118 1066h230M118 1120h330M118 1174h186" stroke="#202020" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="676" cy="1058" r="64" fill="#d94f30"/>
+</svg>

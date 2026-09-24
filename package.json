@@ -1,0 +1,47 @@
+{
+  "name": "web-truyen",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "client": "vite --host 0.0.0.0",
+    "server": "tsx server/index.ts",
+    "server:watch": "tsx watch server/index.ts",
+    "start": "node dist-server/index.js",
+    "start:prod": "npm run build && npm run start",
+    "build": "tsc --noEmit && vite build && esbuild server/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist-server/index.js",
+    "check": "tsc --noEmit && vite build",
+    "crawl:truyenqq": "tsx scripts/crawl-truyenqq.ts",
+    "crawl:truyenqq:all": "tsx scripts/crawl-truyenqq.ts all",
+    "crawl:truyenqq:fast": "tsx scripts/crawl-truyenqq.ts all --fast",
+    "migrate:comics": "node scripts/migrate-comics-storage.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "start:tsx": "tsx server/index.ts"
+  },
+  "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
+    "cors": "latest",
+    "express": "latest",
+    "hls.js": "^1.6.16",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/cors": "latest",
+    "@types/express": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "latest",
+    "esbuild": "^0.28.0",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vite": "latest"
+  }
+}

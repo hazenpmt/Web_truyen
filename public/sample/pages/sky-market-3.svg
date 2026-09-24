@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1280" role="img" aria-label="Trang truyện mẫu 3">
+  <rect width="900" height="1280" fill="#fbf2df"/>
+  <rect x="56" y="56" width="788" height="532" rx="8" fill="#13292f" stroke="#202020" stroke-width="8"/>
+  <path d="M118 482c110-142 256-174 438-92 80 36 156 38 226 6" fill="none" stroke="#f2b84b" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="690" cy="178" r="82" fill="#fff1ba"/>
+  <path d="M146 650h608" stroke="#202020" stroke-width="10"/>
+  <rect x="56" y="646" width="368" height="520" rx="8" fill="#f6e0c0" stroke="#202020" stroke-width="8"/>
+  <rect x="476" y="646" width="368" height="520" rx="8" fill="#0f8b8d" stroke="#202020" stroke-width="8"/>
+  <path d="M116 792h246M116 860h180M116 928h230" stroke="#202020" stroke-width="18" stroke-linecap="round"/>
+  <path d="M544 1032c74-116 154-140 244-74" fill="none" stroke="#faefe0" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="628" cy="842" r="62" fill="#d94f30"/>
+</svg>

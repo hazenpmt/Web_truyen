@@ -1,0 +1,15 @@
+node_modules/
+dist/
+dist-server/
+.dist/
+*.log
+*.tmp
+.env
+.env.*
+.DS_Store
+public/uploads/
+data/*.json
+data/comics/*.json
+!data/.gitkeep
+!data/comics/.gitkeep
+

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1280" role="img" aria-label="Trang truyện mẫu neon 2">
+  <rect width="900" height="1280" fill="#101010"/>
+  <rect x="56" y="56" width="360" height="520" rx="8" fill="#f2b84b" stroke="#f7fbff" stroke-width="8"/>
+  <rect x="484" y="56" width="360" height="520" rx="8" fill="#2f2146" stroke="#f7fbff" stroke-width="8"/>
+  <path d="M122 436h224M122 368h168M122 300h220" stroke="#171717" stroke-width="18" stroke-linecap="round"/>
+  <path d="M548 492c54-138 142-218 240-238" fill="none" stroke="#22c7d6" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="650" cy="236" r="62" fill="#d94f30"/>
+  <rect x="56" y="638" width="788" height="496" rx="8" fill="#172d32" stroke="#f7fbff" stroke-width="8"/>
+  <path d="M142 1044 334 760h92l-90 284zM462 1044 654 760h92l-90 284z" fill="#111"/>
+  <path d="M130 1080h650" stroke="#f2b84b" stroke-width="18" stroke-linecap="round"/>
+  <text x="450" y="1210" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" fill="#f7fbff">Demo reader page</text>
+</svg>

@@ -261,22 +261,36 @@ export async function listOTruyenComics(query: {
     path = `/the-loai/${encodeURIComponent(query.category)}?page=${page}`;
   }
 
-  const payload = await fetchJson<OTruyenListPayload>(`${OTRUYEN_BASE}${path}`);
-  const pagination = payload.data?.params?.pagination || {};
-  const totalItems = Number(pagination.totalItems || 0);
-  const totalItemsPerPage = Number(pagination.totalItemsPerPage || 24);
-  const result: ProviderComicList = {
-    items: (payload.data?.items || []).map(mapOTruyenSummary),
-    pagination: {
-      totalItems,
-      totalItemsPerPage,
-      currentPage: Number(pagination.currentPage || page),
-      totalPages: Math.max(1, Math.ceil(totalItems / totalItemsPerPage))
-    }
-  };
+  try {
+    const payload = await fetchJson<OTruyenListPayload>(`${OTRUYEN_BASE}${path}`);
+    const pagination = payload.data?.params?.pagination || {};
+    const totalItems = Number(pagination.totalItems || 0);
+    const totalItemsPerPage = Number(pagination.totalItemsPerPage || 24);
+    const result: ProviderComicList = {
+      items: (payload.data?.items || []).map(mapOTruyenSummary),
+      pagination: {
+        totalItems,
+        totalItemsPerPage,
+        currentPage: Number(pagination.currentPage || page),
+        totalPages: Math.max(1, Math.ceil(totalItems / totalItemsPerPage))
+      }
+    };
 
-  otruyenListCache.set(cacheKey, { data: result, timestamp: now });
-  return result;
+    otruyenListCache.set(cacheKey, { data: result, timestamp: now });
+    return result;
+  } catch (err) {
+    console.error("[OTruyen API] Request error/timeout, serving fallback local comics:", err);
+    const localComics = await readComicIndex();
+    return {
+      items: localComics,
+      pagination: {
+        totalItems: localComics.length,
+        totalItemsPerPage: 24,
+        currentPage: 1,
+        totalPages: 1
+      }
+    };
+  }
 }
 
 export async function getOTruyenCategories() {

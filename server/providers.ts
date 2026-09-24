@@ -816,7 +816,10 @@ export async function listTruyenQQComics(query: {
   const limit = clampLimit(query.limit);
 
   const comics = await readComicIndex();
-  let filtered = comics.filter((c) => c.source?.name === "TruyenQQ");
+  let filtered = comics.filter((c) => c.source?.name === "TruyenQQ" || c.source?.name === "Nội bộ" || !c.source);
+  if (filtered.length === 0) {
+    filtered = comics;
+  }
 
   // Search filter
   if (query.search) {

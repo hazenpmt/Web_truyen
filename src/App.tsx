@@ -27,9 +27,9 @@ export default function App() {
   const [triggerReload] = useState(0);
   const [source, setSource] = useState<CatalogSource>(() => {
     const saved = localStorage.getItem("catalogSource");
-    if (!saved || saved === "local") {
-      localStorage.setItem("catalogSource", "otruyen");
-      return "otruyen";
+    if (!saved || saved === "local" || saved === "otruyen") {
+      localStorage.setItem("catalogSource", "truyenqq");
+      return "truyenqq";
     }
     return saved as CatalogSource;
   });

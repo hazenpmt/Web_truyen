@@ -1,128 +1,60 @@
-# 📚 Multi-Source Comic & Media Aggregator (Full-Stack Web Platform)
+# 📚 Multi-Source Comic & Media Platform (Web Đọc Truyện & Xem Phim Đa Nguồn)
 
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite)](https://vitejs.dev/)
-[![Express](https://img.shields.io/badge/Express-4.18-000000?logo=express)](https://expressjs.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+> **Dự án Full-stack Web Đọc Truyện Tranh & Xem Phim tích hợp API Đa Nguồn, Tối ưu hóa Hiệu năng và Trải nghiệm Người dùng.**
 
-An enterprise-grade, high-performance web platform for streaming and reading digital comic books and video media. Built with modern TypeScript frontend architecture, high-efficiency caching proxies, automated content crawlers, and role-based access control (RBAC).
+🌐 **Live Demo**: [Thêm link demo sau khi deploy tại đây - VD: https://web-truyen-demo.onrender.com]
 
 ---
 
-## ✨ Key Features & Technical Highlights
+## 🌟 Giới thiệu Dự án
 
-### 🎨 Frontend & UI/UX
-- **Modular Component Architecture**: Clean separation of concerns with atomic UI components, feature modules, custom hooks, and pages.
-- **Dual Reading & Streaming Modes**: Seamless switching between Comic Book Reader mode (OTruyen/TruyenQQ API + Local Storage) and Movie Streaming mode (VSMOV API).
-- **Gamification & Engagement**: Integrated User XP, Level Progression, Animated Avatar Frames, Reading Streak, and Sticker Comments.
-- **Custom Reader Experience**: Vertical scroll / Paginated page reader with full-screen toggle, zoom controls, and chapter navigation history.
+**Web Truyện & Phim Aggregator** là ứng dụng web full-stack giúp người dùng có thể **đọc truyện tranh** và **xem phim trực tuyến** mượt mà từ nhiều nguồn khác nhau. 
 
-### 🛡️ Backend & High-Performance Proxy Layer
-- **Image Proxy & Referer Spoofing Layer**: Solves cross-origin resource sharing (CORS) and anti-hotlinking protections (Referer validation) with express caching middleware.
-- **Automated Web Crawler & Metadata Sync**: Background scheduled sync engine with rate-limiting, batch chunk processing, and automated index updates.
-- **Role-Based Access Control (RBAC)**: JWT authentication with User and Admin roles for metadata management and content moderation.
+Dự án được xây dựng với mục tiêu giải quyết các bài toán thực tế trong phát triển Web:
+- **Xử lý bất đồng bộ & Tối ưu giao diện**: Tách nhỏ giao diện thành dạng Component độc lập (Modular Architecture), tải ảnh thông minh (Optimized Image Proxy).
+- **Bypass CORS & Anti-Hotlinking**: Tự viết Middleware trên Server trung gian để tải được ảnh từ các nguồn CDN có bảo mật.
+- **Hệ thống tương tác (Gamification)**: Cấp độ người dùng (XP Level), Khung Avatar động, Lịch sử đọc truyện và Bình luận nhãn dán.
 
 ---
 
-## 🏗️ Architecture & Folder Structure
+## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
 
-```
-Web_truyen/
-├── server/                     # Backend Express App & Services
-│   ├── auth.ts                 # JWT Authentication & RBAC Engine
-│   ├── importer.ts             # JSON & External Content Importer
-│   ├── index.ts                # Express API Server Entrypoint
-│   ├── providers.ts            # Content Provider Aggregators (OTruyen, TruyenQQ, VSMOV)
-│   ├── storage.ts              # Local High-Speed Flat-File JSON Storage
-│   └── sync.ts                 # Automated Background Crawl & Sync Service
-├── src/                        # Frontend React Application
-│   ├── components/             # Reusable UI & Feature Components
-│   │   ├── comic/              # Comic cards, filters, and reader widgets
-│   │   ├── common/             # Base UI elements, frame animations, optimized images
-│   │   ├── layout/             # Header, Navigation, and Footer
-│   │   ├── modals/             # Auth, User Dashboard, Admin Dashboard
-│   │   └── movie/              # Movie catalog & media player components
-│   ├── constants/              # System constants and configuration specs
-│   ├── hooks/                  # Custom React hooks (debounce, responsive, visible)
-│   ├── pages/                  # Page-level containers & views
-│   ├── utils/                  # Helper utilities and hash routing
-│   ├── App.tsx                 # Modular Root App Component
-│   ├── main.tsx                # React DOM Mount Entrypoint
-│   └── types.ts                # Strict TypeScript Interfaces & Types
-├── data/                       # Storage directory (flat-file JSON database)
-├── scripts/                    # CLI Utilities & Maintenance Scripts
-└── public/                     # Static Assets, Animations, and Avatar Frames
-```
+### Frontend (Giao diện)
+- **React 18** & **TypeScript**: Xây dựng giao diện Type-safe, quản lý State chặt chẽ.
+- **Vite**: Công cụ build ứng dụng siêu nhanh.
+- **Vanilla CSS**: Tùy chỉnh giao diện Glassmorphism hiện đại, Dark mode, tương thích hoàn toàn trên cả Mobile & Desktop.
+
+### Backend (Máy chủ API & Proxy)
+- **Node.js** & **Express.js**: Xây dựng RESTful API, quản lý dữ liệu và xử lý request.
+- **JWT (JSON Web Token)**: Xác thực đăng nhập và phân quyền người dùng (User / Admin).
+- **Cheerio & Axios**: Crawl và đồng bộ dữ liệu metadata tự động.
 
 ---
 
-## 🚀 Quick Start Guide
+## ✨ Các Tính Năng Nổi Bật
 
-### Prerequisites
-- **Node.js**: v18.0 or higher
-- **npm**: v9.0 or higher
+1. 📖 **Đọc Truyện Tranh Đa Nguồn**:
+   - Chế độ đọc dọc/cuộn trang mượt mà trên cả điện thoại và máy tính.
+   - Hỗ trợ đổi máy chủ ảnh (OTruyen, TruyenQQ, Nguồn nội bộ).
+   - Lưu lịch sử đọc truyện tự động.
 
-### Local Development Setup
+2. 🎬 **Xem Phim Trực Tuyến**:
+   - Tích hợp trình phát video nhúng (Embed player) hỗ trợ xem phim HD.
+   - Tìm kiếm và lọc phim theo thể loại, quốc gia, năm phát hành.
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/web-truyen.git
-   cd web-truyen
-   ```
+3. 👤 **Hệ Thống Tài Khoản & Gamification**:
+   - Đăng ký, Đăng nhập bảo mật với Token JWT.
+   - Hệ thống tính điểm kinh nghiệm (XP) & Level theo thời gian đọc truyện thực tế.
+   - Khung Avatar động đẹp mắt (MP4/WebM frame).
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Start the Development Server (Frontend + Backend)**:
-   ```bash
-   npm run dev
-   ```
-
-   - **Frontend UI**: `http://localhost:5173`
-   - **Backend API Server**: `http://localhost:3001`
-
-4. **Verify TypeScript & Production Build**:
-   ```bash
-   npm run check
-   ```
+4. 🔍 **Tìm Kiếm & Lọc Thông Minh**:
+   - Tìm kiếm tức thì với cơ chế Debounce (tránh spam request đến Server).
+   - Lọc theo thể loại, trạng thái hoàn thành và lượt xem.
 
 ---
 
-## 🛰️ Content Crawler & Provider Commands
+## 📐 Điểm Nổi Bật Về Kĩ Thuật (Technical Highlights)
 
-- **Run TruyenQQ Metadata Crawl (Safe Rate-Limited Mode)**:
-  ```bash
-  npm run crawl:truyenqq -- 5
-  ```
-
-- **Run Fast Sync (Resume from specific page)**:
-  ```bash
-  npm run crawl:truyenqq:fast -- --from 100
-  ```
-
----
-
-## ⚙️ Environment Variables & VPS Deployment
-
-When deploying to a production VPS, set the following environment variables:
-
-```bash
-PORT=3001
-ENABLE_TRUYENQQ_AUTO_SYNC=1
-TRUYENQQ_INITIAL_SYNC_PAGES=3
-TRUYENQQ_INTERVAL_SYNC_PAGES=3
-```
-
-Run build script for production deployment:
-```bash
-npm run build
-npm run start
-```
-
----
-
-## 📄 License
-This project is licensed under the MIT License.
+- **Kiến trúc Code Clean & Modular**: Codebase được tái cấu trúc sạch sẽ theo các thư mục `components/`, `pages/`, `hooks/`, `utils/`, `types.ts`, không bị lộn xộn.
+- **Image Proxy Caching Middleware**: Giải quyết triệt để lỗi 403 Forbidden / CORS khi tải ảnh từ server truyện bên thứ 3.
+- **100% Type-Safe**: Đảm bảo không có lỗi ép kiểu runtime nhờ TypeScript Strict Mode.

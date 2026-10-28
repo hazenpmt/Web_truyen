@@ -187,6 +187,14 @@ export function CatalogView({
   return (
     <main className="page">
       <section className="toolbar" aria-label="Bộ lọc" style={{ marginTop: 0 }}>
+        <label className="select-box">
+          <Library size={18} />
+          <select aria-label="Nguồn truyện" value={source} onChange={(event) => { setRanking(null); setGenre(""); setStatus(""); setSource(event.target.value as CatalogSource); }}>
+            <option value="otruyen">OTruyen — API trực tuyến</option>
+            <option value="truyenqq">TruyenQQ — kho đã crawl</option>
+            <option value="local">Kho nội bộ</option>
+          </select>
+        </label>
         <label className="search-box">
           <Search size={18} />
           <input value={search} onChange={(event) => { setRanking(null); setSearch(event.target.value); }} placeholder="Tìm truyện, tác giả, thể loại" />
@@ -231,7 +239,7 @@ export function CatalogView({
       ) : (
         <div className="loading-row" style={{ textAlign: "center", padding: "40px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
           <div style={{ fontSize: "1rem", color: "var(--ink)" }}>
-            {source === "otruyen" ? "Không tìm thấy truyện nào." : "Chưa có truyện nào trong kho nội bộ."}
+            {source === "otruyen" ? "Không tìm thấy truyện nào từ OTruyen." : source === "truyenqq" ? "Chưa có truyện TruyenQQ được crawl. Chọn OTruyen để đọc trực tuyến." : "Chưa có truyện nào trong kho nội bộ."}
           </div>
           {source === "local" && (
             <div style={{ display: "flex", gap: "10px", marginTop: "8px", flexWrap: "wrap", justifyContent: "center" }}>

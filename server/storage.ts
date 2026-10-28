@@ -13,106 +13,39 @@ const comicsDir = path.join(dataDir, "comics");
 const detailCacheLimit = 50;
 let storageReady = false;
 
-const sampleSeedComics: Comic[] = [
-  {
-    id: "sky-market",
-    slug: "sky-market",
-    title: "Thượng Giới Thị Trường (Sky Market)",
-    altTitles: ["Sky Market Chronicles"],
-    author: "TPM Studio",
-    description: "Hành trình khám phá thế giới viễn tưởng trên không với các khu chợ lơ lửng giữa những tầng mây.",
-    status: "ongoing",
-    genres: ["Phiêu lưu", "Hành động", "Khoa học viễn tưởng"],
-    cover: "/sample/covers/sky-market.svg",
-    rating: 4.8,
-    views: 12500,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    source: { name: "Nội bộ", url: "#", license: "Demo" },
-    chapters: [
-      {
-        id: "sky-market-1",
-        slug: "chuong-1",
-        number: 1,
-        title: "Chương 1: Khởi đầu hành trình",
-        createdAt: new Date().toISOString(),
-        pages: [
-          { index: 1, image: "/sample/pages/sky-market-1.svg" },
-          { index: 2, image: "/sample/pages/sky-market-2.svg" },
-          { index: 3, image: "/sample/pages/sky-market-3.svg" }
-        ]
-      },
-      {
-        id: "sky-market-2",
-        slug: "chuong-2",
-        number: 2,
-        title: "Chương 2: Bí ẩn tháp cổ",
-        createdAt: new Date().toISOString(),
-        pages: [
-          { index: 1, image: "/sample/pages/sky-market-1.svg" },
-          { index: 2, image: "/sample/pages/sky-market-2.svg" }
-        ]
-      }
-    ]
-  },
-  {
-    id: "neon-district",
-    slug: "neon-district",
-    title: "Vùng Đô Thị Neon (Neon District)",
-    altTitles: ["Neon City Stories"],
-    author: "TPM Studio",
-    description: "Câu chuyện hành động kịch tính giữa trung tâm thành phố rực rỡ đèn neon.",
-    status: "ongoing",
-    genres: ["Hành động", "Truyện Màu", "Cyberpunk"],
-    cover: "/sample/covers/neon-district.svg",
-    rating: 4.9,
-    views: 18900,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    source: { name: "Nội bộ", url: "#", license: "Demo" },
-    chapters: [
-      {
-        id: "neon-district-1",
-        slug: "chuong-1",
-        number: 1,
-        title: "Chương 1: Thành phố ánh đèn",
-        createdAt: new Date().toISOString(),
-        pages: [
-          { index: 1, image: "/sample/pages/neon-district-1.svg" },
-          { index: 2, image: "/sample/pages/neon-district-2.svg" }
-        ]
-      }
-    ]
-  }
-];
-
 export async function ensureStorage() {
   if (storageReady) return;
   await mkdir(dataDir, { recursive: true });
   await mkdir(uploadsDir, { recursive: true });
   await mkdir(comicsDir, { recursive: true });
+  let index: ComicSummary[];
   try {
-    const raw = await readFile(comicsIndexFile, "utf8");
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      await seedSampleData();
-    }
-  } catch {
-    await seedSampleData();
+    index = JSON.parse(await readFile(comicsIndexFile, "utf8"));
+    if (!Array.isArray(index)) throw new Error("Comic index must be an array.");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    index = [];
+    await writeJsonAtomic(comicsIndexFile, index);
   }
-  storageReady = true;
-}
 
-async function seedSampleData() {
-  const index: ComicSummary[] = [];
-  for (const comic of sampleSeedComics) {
-    const normalized = normalizeComic(comic);
-    await writeJsonAtomic(comicDetailPath(normalized.slug), normalized);
-    cacheComicDetail(normalized);
-    index.push(comicToSummary(normalized));
+  // Remove only the bundled demo records created by older releases.
+  const demos = index.filter((comic) =>
+    ["sky-market", "neon-district"].includes(comic.slug) &&
+    comic.author === "TPM Studio" && comic.source?.license === "Demo"
+  );
+  if (demos.length) {
+    const demoSlugs = new Set(demos.map((comic) => comic.slug));
+    index = index.filter((comic) => !demoSlugs.has(comic.slug));
+    await writeJsonAtomic(comicsIndexFile, index);
+    for (const comic of demos) {
+      try { await unlink(comicDetailPath(comic.slug)); }
+      catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      }
+    }
   }
   cachedComicIndex = index;
-  await writeJsonAtomic(comicsIndexFile, index);
+  storageReady = true;
 }
 
 let cachedComicIndex: ComicSummary[] | null = null;

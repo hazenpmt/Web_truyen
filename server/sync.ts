@@ -1,3 +1,4 @@
+import { truyenQQOrigin, resolveLegacyTruyenQQUrl } from "./truyenqq-source";
 import { readState, writeState } from "./database";
 import * as cheerio from "cheerio";
 import crypto from "node:crypto";
@@ -43,27 +44,14 @@ type TruyenQQSyncOptions = {
   skipHot?: boolean;
 };
 
-let resolvedTruyenQQDomain = "https://truyenqqko.com";
 async function resolveTruyenQQDomain(): Promise<string> {
-  try {
-    const res = await fetch("https://flax.to/truyenqq", { method: "GET" });
-    const finalUrl = new URL(res.url);
-    resolvedTruyenQQDomain = finalUrl.origin;
-    return resolvedTruyenQQDomain;
-  } catch (err) {
-    console.error("[Sync] Error resolving TruyenQQ domain:", err);
-    return resolvedTruyenQQDomain;
-  }
+  return truyenQQOrigin();
 }
 
 export async function fetchHtml(url: string): Promise<string> {
-  let targetUrl = url;
-  if (url.includes("flax.to")) {
-    const activeDomain = await resolveTruyenQQDomain();
-    targetUrl = url.replace(/https?:\/\/[^\/]+/, activeDomain);
-    console.log(`[Sync] Rewrote flax.to URL: ${url} -> ${targetUrl}`);
-  }
+  const targetUrl = resolveLegacyTruyenQQUrl(url);
   const response = await fetch(targetUrl, {
+    signal: AbortSignal.timeout(20000),
     headers: {
       "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",

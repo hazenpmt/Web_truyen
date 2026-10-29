@@ -58,3 +58,7 @@ After validating migrated accounts, comics and histories, start the app. Changin
 `npm run check` checks TypeScript and builds the frontend. `npm run test:db` runs MongoDB integration tests against an isolated, temporary local MongoDB process. Its first run downloads a MongoDB test binary; it never uses your configured production URI.
 
 Use `ENABLE_BACKGROUND_SYNC=0` to disable startup warmup and automatic crawlers, for example during verification. This does not disable manually triggered imports/crawls.
+
+## TruyenQQ source
+
+Set `TRUYENQQ_BASE_URL=https://truyenqqko.com` in the backend environment. Use the actual comic website origin when the source changes. The old `flax.to/truyenqq` link returns 404 and must not be used as the crawler origin. Both crawler and provider now share this setting.

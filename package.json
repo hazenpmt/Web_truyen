@@ -20,7 +20,8 @@
     "start:tsx": "tsx server/index.ts",
     "migrate:mongodb": "tsx scripts/migrate-mongodb.ts",
     "db:admin": "tsx scripts/set-admin.ts",
-    "test:db": "tsx --test tests/mongodb.test.ts"
+    "test:db": "tsx --test tests/mongodb.test.ts",
+    "test:source": "tsx --test tests/truyenqq-source.test.ts"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",

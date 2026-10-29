@@ -1,3 +1,4 @@
+import { truyenQQOrigin } from "./truyenqq-source";
 import * as cheerio from "cheerio";
 import { loadProviderCache, saveProviderCache } from "./database";
 
@@ -756,29 +757,8 @@ export const TRUYENQQ_GENRES = [
   { name: "Xuyên Không", slug: "xuyen-khong-88" }
 ];
 
-let cachedTruyenQQUrl = "https://truyenqqko.com/";
-let lastResolvedTime = 0;
-
 export async function getTruyenQQBaseUrl(): Promise<string> {
-  const now = Date.now();
-  if (now - lastResolvedTime < 10 * 60 * 1000) {
-    return cachedTruyenQQUrl;
-  }
-  try {
-    const res = await fetch("https://flax.to/truyenqq", {
-      headers: {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-      }
-    });
-    if (res.url) {
-      cachedTruyenQQUrl = res.url;
-      lastResolvedTime = now;
-      console.log(`[Providers] Resolved TruyenQQ active mirror: ${cachedTruyenQQUrl}`);
-    }
-  } catch (err) {
-    console.error("[Providers] Error resolving TruyenQQ base URL, using cached:", err);
-  }
-  return cachedTruyenQQUrl;
+  return truyenQQOrigin();
 }
 
 export async function listTruyenQQComics(query: {

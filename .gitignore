@@ -13,3 +13,5 @@ data/comics/*.json
 !data/.gitkeep
 !data/comics/.gitkeep
 
+
+!.env.example

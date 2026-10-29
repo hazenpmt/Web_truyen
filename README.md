@@ -1,3 +1,5 @@
+> Backend storage: MongoDB is required. See [MongoDB setup and migration](docs/mongodb.md) before running or deploying.
+
 #  Multi-Source Comic & Media Platform (Web Đọc Truyện & Xem Phim Đa Nguồn)
 
 > **Dự án Full-stack Web Đọc Truyện Tranh & Xem Phim tích hợp API Đa Nguồn, Tối ưu hóa Hiệu năng và Trải nghiệm Người dùng.**

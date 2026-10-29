@@ -1,3 +1,4 @@
+import { closeDb } from "../server/database";
 import { getTruyenQQTotalPagesEstimate, runTruyenQQSync } from "../server/sync";
 
 type CrawlCliOptions = {
@@ -85,4 +86,4 @@ async function main() {
 main().catch((error) => {
   console.error("[TruyenQQ CLI] Crawl failed:", error);
   process.exitCode = 1;
-});
+}).finally(closeDb);

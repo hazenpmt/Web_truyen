@@ -1,17 +1,12 @@
 import * as cheerio from "cheerio";
-import fs from "node:fs/promises";
-import path from "node:path";
+import { loadProviderCache, saveProviderCache } from "./database";
+
 import type { Chapter, Comic, ComicPage, ComicStatus, ComicSummary } from "./types";
-import { projectRoot, readComicBySlug, readComicIndex, writeComicDirect } from "./storage";
+import { readComicBySlug, readComicIndex, writeComicDirect } from "./storage";
 
 const OTRUYEN_BASE = "https://otruyenapi.com/v1/api";
 const OTRUYEN_IMAGE_BASE = "https://img.otruyenapi.com/uploads/comics";
 const VSMOV_BASE = "https://phimapi.com";
-
-const OTRUYEN_CACHE_FILE = path.join(projectRoot, "data", "otruyen_detail_cache.json");
-const VSMOV_CACHE_FILE = path.join(projectRoot, "data", "vsmov_detail_cache.json");
-const VSMOV_LIST_CACHE_FILE = path.join(projectRoot, "data", "vsmov_list_cache.json");
-const OTRUYEN_CHAP_CACHE_FILE = path.join(projectRoot, "data", "otruyen_chapter_cache.json");
 
 let otruyenCache: Record<string, { data: any; timestamp: number }> = {};
 let vsmovCache: Record<string, { data: any; timestamp: number }> = {};
@@ -21,36 +16,16 @@ const movieListCache = new Map<string, { data: any; timestamp: number }>();
 const truyenQQRankingCache = new Map<string, { data: ComicSummary[]; timestamp: number }>();
 
 async function loadDetailCaches() {
-  try {
-    const raw = await fs.readFile(OTRUYEN_CACHE_FILE, "utf8");
-    otruyenCache = JSON.parse(raw);
-  } catch {}
-  try {
-    const raw = await fs.readFile(VSMOV_CACHE_FILE, "utf8");
-    vsmovCache = JSON.parse(raw);
-  } catch {}
-  try {
-    const raw = await fs.readFile(VSMOV_LIST_CACHE_FILE, "utf8");
-    const parsed = JSON.parse(raw);
-    Object.entries(parsed || {}).forEach(([key, value]) => {
-      movieListCache.set(key, value as { data: any; timestamp: number });
-    });
-  } catch {}
-  try {
-    const raw = await fs.readFile(OTRUYEN_CHAP_CACHE_FILE, "utf8");
-    otruyenChapCache = JSON.parse(raw);
-  } catch {}
+  [otruyenCache, vsmovCache, otruyenChapCache] = await Promise.all([
+    loadProviderCache("otruyen_detail"), loadProviderCache("movie_detail"), loadProviderCache("otruyen_chapter")
+  ]);
+  await hydrateMovieListCache();
 }
 await loadDetailCaches();
 
-async function hydrateMovieListCacheFromDisk() {
-  try {
-    const raw = await fs.readFile(VSMOV_LIST_CACHE_FILE, "utf8");
-    const parsed = JSON.parse(raw);
-    Object.entries(parsed || {}).forEach(([key, value]) => {
-      movieListCache.set(key, value as { data: any; timestamp: number });
-    });
-  } catch {}
+async function hydrateMovieListCache() {
+  const parsed = await loadProviderCache("movie_list");
+  Object.entries(parsed).forEach(([key, value]) => movieListCache.set(key, value));
 }
 
 function findFallbackMovieList(page: number, limit: number) {
@@ -315,7 +290,7 @@ export async function getOTruyenComic(slug: string): Promise<Comic> {
 
   const result = mapOTruyenDetail(item);
   otruyenCache[slug] = { data: result, timestamp: now };
-  fs.writeFile(OTRUYEN_CACHE_FILE, JSON.stringify(otruyenCache, null, 2)).catch(() => {});
+  await saveProviderCache("otruyen_detail", slug, result, now);
   return result;
 }
 
@@ -363,7 +338,7 @@ export async function getOTruyenChapter(comicSlug: string, chapterKey: string) {
   };
 
   otruyenChapCache[cacheKey] = { data: result, timestamp: now };
-  fs.writeFile(OTRUYEN_CHAP_CACHE_FILE, JSON.stringify(otruyenChapCache, null, 2)).catch(() => {});
+  await saveProviderCache("otruyen_chapter", cacheKey, result, now);
   return result;
 }
 
@@ -373,7 +348,7 @@ export async function listVsmovMovies(query: { search?: string; type?: string; p
   const cacheKey = `${query.search || ""}_${query.type || ""}_${page}_${limit}`;
   let cached = movieListCache.get(cacheKey);
   if (!cached) {
-    await hydrateMovieListCacheFromDisk();
+    await hydrateMovieListCache();
     cached = movieListCache.get(cacheKey);
   }
   const now = Date.now();
@@ -462,7 +437,7 @@ export async function listVsmovMovies(query: { search?: string; type?: string; p
   }
 
   movieListCache.set(cacheKey, { data: result, timestamp: now });
-  fs.writeFile(VSMOV_LIST_CACHE_FILE, JSON.stringify(Object.fromEntries(movieListCache), null, 2)).catch(() => {});
+  await saveProviderCache("movie_list", cacheKey, result, now);
   return result;
 }
 
@@ -508,7 +483,7 @@ export async function getVsmovMovie(slug: string): Promise<ProviderMovieDetail> 
   };
 
   vsmovCache[slug] = { data: result, timestamp: now };
-  fs.writeFile(VSMOV_CACHE_FILE, JSON.stringify(vsmovCache, null, 2)).catch(() => {});
+  await saveProviderCache("movie_detail", slug, result, now);
   return result;
 }
 

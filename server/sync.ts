@@ -1,3 +1,4 @@
+import { readState, writeState } from "./database";
 import * as cheerio from "cheerio";
 import crypto from "node:crypto";
 import { comicToSummary, readComicBySlug, readComicIndex, writeComicDirect } from "./storage";
@@ -337,12 +338,11 @@ export function startTruyenQQAutoSync() {
 // TruyenQQ vs OTruyen comparison
 // ─────────────────────────────────────────────────────────────────────────────
 
-import fs from "node:fs/promises";
-import path from "node:path";
-import { projectRoot } from "./storage";
+
+
+
 
 const OTRUYEN_BASE = "https://otruyenapi.com/v1/api";
-const QQ_SYNC_RESULT_FILE = path.join(projectRoot, "data", "truyenqq_compare_sync.json");
 
 export type TruyenQQCompareResult = {
   lastRun: string;
@@ -364,17 +364,10 @@ export type TruyenQQCompareItem = {
 };
 
 export async function readQQSyncResults(): Promise<TruyenQQCompareResult | null> {
-  try {
-    const raw = await fs.readFile(QQ_SYNC_RESULT_FILE, "utf-8");
-    return JSON.parse(raw) as TruyenQQCompareResult;
-  } catch {
-    return null;
-  }
+  return readState<TruyenQQCompareResult | null>("truyenqq_compare_sync", null);
 }
-
 async function writeQQSyncResults(data: TruyenQQCompareResult): Promise<void> {
-  await fs.mkdir(path.dirname(QQ_SYNC_RESULT_FILE), { recursive: true });
-  await fs.writeFile(QQ_SYNC_RESULT_FILE, JSON.stringify(data, null, 2), "utf-8");
+  await writeState("truyenqq_compare_sync", data);
 }
 
 function normalizeTitleForMatch(title: string): string {

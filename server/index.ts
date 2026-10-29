@@ -1,3 +1,4 @@
+import { getDb, readState, writeState } from "./database";
 import cors from "cors";
 import express from "express";
 import crypto from "node:crypto";
@@ -49,7 +50,7 @@ import {
   writeComicDirect
 } from "./storage";
 import type { Chapter, Comic, ComicSummary } from "./types";
-import fs from "node:fs/promises";
+
 
 type AccessLog = {
   timestamp: string;
@@ -60,8 +61,6 @@ type AccessLog = {
   action: string;
 };
 
-const LOGS_FILE = path.join(projectRoot, "data", "access_logs.json");
-const CHAPTER_COMMENTS_FILE = path.join(projectRoot, "data", "chapter_comments.json");
 const clientDistDir = path.join(projectRoot, "dist");
 const maxImageProxyConcurrency = Math.max(1, Number(process.env.IMAGE_PROXY_CONCURRENCY || 4));
 const accessLogsEnabled = process.env.ENABLE_ACCESS_LOGS === "1";
@@ -86,34 +85,27 @@ type ChapterComment = {
   createdAt: string;
 };
 
-type ChapterCommentsDb = Record<string, ChapterComment[]>;
 
-let chapterCommentsCache: ChapterCommentsDb | null = null;
-let chapterCommentsLoadPromise: Promise<ChapterCommentsDb> | null = null;
-let chapterCommentsWriteChain = Promise.resolve();
+
+
+
+
 
 async function readLogs(): Promise<AccessLog[]> {
   if (cachedLogs) return cachedLogs;
   if (logsLoadPromise) return logsLoadPromise;
-  logsLoadPromise = readLogsFromDisk().then((logs) => {
+  logsLoadPromise = readLogsFromDatabase().then((logs) => {
     cachedLogs = logs;
     return logs;
   });
   return logsLoadPromise;
 }
 
-async function readLogsFromDisk(): Promise<AccessLog[]> {
-  try {
-    const raw = await fs.readFile(LOGS_FILE, "utf-8");
-    return JSON.parse(raw) as AccessLog[];
-  } catch {
-    return [];
-  }
+async function readLogsFromDatabase(): Promise<AccessLog[]> {
+  return readState<AccessLog[]>("access_logs", []);
 }
-
 async function writeLogs(logs: AccessLog[]): Promise<void> {
-  await fs.mkdir(path.dirname(LOGS_FILE), { recursive: true });
-  await fs.writeFile(LOGS_FILE, JSON.stringify(logs, null, 2), "utf-8");
+  await writeState("access_logs", logs.slice(0, 2000));
 }
 
 function chapterCommentKey(source: string, comicSlug: string, chapterSlug: string) {
@@ -127,29 +119,10 @@ function cleanCommentText(value: unknown, maxLength: number) {
     .slice(0, maxLength);
 }
 
-async function readChapterComments(): Promise<ChapterCommentsDb> {
-  if (chapterCommentsCache) return chapterCommentsCache;
-  if (chapterCommentsLoadPromise) return chapterCommentsLoadPromise;
-  chapterCommentsLoadPromise = fs.readFile(CHAPTER_COMMENTS_FILE, "utf-8")
-    .then((raw) => JSON.parse(raw) as ChapterCommentsDb)
-    .catch(() => ({}))
-    .then((comments) => {
-      chapterCommentsCache = comments;
-      return comments;
-    })
-    .finally(() => {
-      chapterCommentsLoadPromise = null;
-    });
-  return chapterCommentsLoadPromise;
-}
-
-async function writeChapterComments(comments: ChapterCommentsDb): Promise<void> {
-  chapterCommentsCache = comments;
-  chapterCommentsWriteChain = chapterCommentsWriteChain.then(async () => {
-    await fs.mkdir(path.dirname(CHAPTER_COMMENTS_FILE), { recursive: true });
-    await fs.writeFile(CHAPTER_COMMENTS_FILE, JSON.stringify(comments, null, 2), "utf-8");
-  });
-  return chapterCommentsWriteChain;
+async function readChapterComments(thread: string): Promise<ChapterComment[]> {
+  const db = await getDb();
+  const rows = await db.collection("comments").find({ thread }, { projection: { _id: 0, thread: 0 } }).sort({ createdAt: -1, id: -1 }).limit(200).toArray();
+  return rows as unknown as ChapterComment[];
 }
 
 function enqueueAccessLog(log: AccessLog) {
@@ -548,10 +521,9 @@ app.get("/api/comments/chapters", async (request, response, next) => {
       return;
     }
 
-    const comments = await readChapterComments();
     const key = chapterCommentKey(source, comicSlug, chapterSlug);
     response.setHeader("Cache-Control", "no-store");
-    response.json({ comments: comments[key] || [] });
+    response.json({ comments: await readChapterComments(key) });
   } catch (error) {
     next(error);
   }
@@ -576,7 +548,6 @@ app.post("/api/comments/chapters", async (request, response, next) => {
       return;
     }
 
-    const comments = await readChapterComments();
     const key = chapterCommentKey(source, comicSlug, chapterSlug);
     const role: ChapterComment["role"] = user?.role === "admin" ? "admin" : "user";
     const avatar = user?.avatar ? cleanCommentText(user.avatar, 24000) : "";
@@ -593,11 +564,11 @@ app.post("/api/comments/chapters", async (request, response, next) => {
         role,
         createdAt: new Date().toISOString()
       },
-      ...(comments[key] || [])
+      ...(await readChapterComments(key))
     ].slice(0, 200);
-    comments[key] = nextComments;
-    await writeChapterComments(comments);
-    response.status(201).json({ comments: nextComments });
+    const db = await getDb();
+    await db.collection("comments").insertOne({ ...nextComments[0], thread: key });
+    response.status(201).json({ comments: await readChapterComments(key) });
   } catch (error) {
     next(error);
   }
@@ -1148,8 +1119,10 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
   response.status(500).json({ message: "Server gặp lỗi." });
 });
 
+await getDb();
 app.listen(port, "0.0.0.0", () => {
   console.log(`API running on http://localhost:${port}`);
+  if (process.env.ENABLE_BACKGROUND_SYNC === "0") return;
   setTimeout(() => {
     listVsmovMovies({ page: 1, limit: 16 }).catch(err => console.error("[Warmup] Movie list warmup error:", err));
     readComicIndex().catch(err => console.error("[Warmup] Comic index warmup error:", err));
